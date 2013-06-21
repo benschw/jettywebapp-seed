@@ -258,9 +258,7 @@ public abstract class CookieConsumer {
                 response.setStatus(p.getHttpStatusCode());
                 response.resetBuffer();
                 request.setAttribute("OAuthProblemException", p);
-                request.getRequestDispatcher //
-                        ("/OAuthProblemException.jsp").forward(request,
-                        response);
+                request.getRequestDispatcher("/OAuthProblemException.jsp").forward(request, response);
             }
         } else if (e instanceof IOException) {
             throw (IOException) e;
