@@ -1,0 +1,35 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'maven'
+
+
+repositories {
+    repositories {
+
+        maven {
+            url "http://sonatype.bvops.net:8081/nexus/content/groups/public"
+        }
+        maven {
+            url "http://oauth.googlecode.com/svn/code/maven"
+        }
+    }
+}
+
+dependencies {
+    compile 'org.eclipse.jetty:jetty-server:7.2.0.v20101020'
+
+    compile 'commons-httpclient:commons-httpclient:3.1'
+
+    compile 'javax.servlet:servlet-api:2.4'
+
+    compile 'net.oauth.core:oauth:20100527'
+    compile 'net.oauth.core:oauth-consumer:20100527'
+    compile 'net.oauth.core:oauth-httpclient3:20090617'
+    compile 'net.oauth.core:oauth-provider:20100527'
+
+    testCompile 'junit:junit:4.11'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.6'
+}
