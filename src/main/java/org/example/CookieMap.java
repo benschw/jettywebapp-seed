@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author John Kristian
  */
 public class CookieMap {
+    protected final Logger log = Logger.getLogger(getClass().getName());
 
     public CookieMap(HttpServletRequest request, HttpServletResponse response) {
         this.response = response;
@@ -40,6 +42,7 @@ public class CookieMap {
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie != null) {
+                    log.info("loading cookie: " + cookie.getName()+ ": "+ cookie.getValue());
                     name2value.put(cookie.getName(), cookie.getValue());
                 }
             }
@@ -53,10 +56,15 @@ public class CookieMap {
     private final Map<String, String> name2value = new HashMap<String, String>();
 
     public String get(String name) {
-        return name2value.get(name);
+        String s = name2value.get(name);
+        log.info("Cookie Get: "+ path + "." + name + ":  " + s);
+
+        return s;
     }
 
     public void put(String name, String value) {
+        log.info("Cookie Set: "+ path + "." + name + ":  " + value);
+
         if (value == null) {
             remove(name);
         } else if (!value.equals(name2value.get(name))) {

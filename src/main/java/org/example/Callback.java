@@ -49,20 +49,20 @@ public class Callback extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
         OAuthConsumer consumer = null;
+        log.info("....begin callback servlet");
+
         try {
-            final OAuthMessage requestMessage = OAuthServlet.getMessage(
-                    request, null);
+            final OAuthMessage requestMessage = OAuthServlet.getMessage(request, null);
             requestMessage.requireParameters("consumer");
             final String consumerName = requestMessage.getParameter("consumer");
             consumer = CookieConsumer.getConsumer(consumerName, null);
             final CookieMap cookies = new CookieMap(request, response);
-            final OAuthAccessor accessor = CookieConsumer.newAccessor(consumer,
-                    cookies);
+            final OAuthAccessor accessor = CookieConsumer.newAccessor(consumer, cookies);
             final String expectedToken = accessor.requestToken;
+
             String requestToken = requestMessage.getParameter(OAuth.OAUTH_TOKEN);
             if (requestToken == null || requestToken.length() <= 0) {
-                log.warning(request.getMethod() + " "
-                        + OAuthServlet.getRequestURL(request));
+                log.warning(request.getMethod() + " " + OAuthServlet.getRequestURL(request));
                 requestToken = expectedToken;
                 if (requestToken == null) {
                     OAuthProblemException problem = new OAuthProblemException(OAuth.Problems.PARAMETER_ABSENT);
@@ -75,24 +75,23 @@ public class Callback extends HttpServlet {
                 problem.setParameter("oauth_expected_token", expectedToken);
                 throw problem;
             }
+
             List<OAuth.Parameter> parameters = null;
             String verifier = requestMessage.getParameter(OAuth.OAUTH_VERIFIER);
             if (verifier != null) {
                 parameters = OAuth.newList(OAuth.OAUTH_VERIFIER, verifier);
             }
+
             OAuthMessage result = CookieConsumer.CLIENT.getAccessToken(accessor, null, parameters);
             if (accessor.accessToken != null) {
                 String returnTo = requestMessage.getParameter("returnTo");
                 if (returnTo == null) {
                     returnTo = request.getContextPath(); // home page
                 }
+                //returnTo = "/";
                 cookies.remove(consumerName + ".requestToken");
-                cookies
-                        .put(consumerName + ".accessToken",
-                                accessor.accessToken);
-                cookies
-                        .put(consumerName + ".tokenSecret",
-                                accessor.tokenSecret);
+                cookies.put(consumerName + ".accessToken", accessor.accessToken);
+                cookies.put(consumerName + ".tokenSecret", accessor.tokenSecret);
                 throw new RedirectException(returnTo);
             }
             OAuthProblemException problem = new OAuthProblemException(OAuth.Problems.PARAMETER_ABSENT);

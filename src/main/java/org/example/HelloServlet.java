@@ -5,7 +5,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
@@ -21,9 +24,12 @@ public class HelloServlet extends HttpServlet
 {
     private static final long serialVersionUID = 1L;
 
+    protected final Logger log = Logger.getLogger(getClass().getName());
+
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         OAuthConsumer consumer = null;
+        log.info("....begin hello servlet");
         try {
             consumer = CookieConsumer.getConsumer("twitter", getServletContext());
             OAuthAccessor accessor = CookieConsumer.getAccessor(request, response, consumer);
@@ -35,6 +41,9 @@ public class HelloServlet extends HttpServlet
                 ParameterStyle.AUTHORIZATION_HEADER
             );
             int status = result.getHttpResponse().getStatusCode();
+
+            log.info("Response Status" + status);
+
             if (status != HttpResponseMessage.STATUS_OK) {
                 OAuthProblemException problem = result.toOAuthProblemException();
                 if (problem.getProblem() != null) {
@@ -51,6 +60,11 @@ public class HelloServlet extends HttpServlet
                 CookieConsumer.copyResponse(result, response);
             }
         } catch (Exception e) {
+            StringWriter s = new StringWriter();
+            PrintWriter pw = new PrintWriter(s);
+            e.printStackTrace(pw);
+            pw.flush();
+            log.warning(s.toString());
             CookieConsumer.handleException(e, request, response, consumer);
         }
     }

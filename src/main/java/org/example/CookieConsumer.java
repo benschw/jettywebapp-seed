@@ -167,11 +167,9 @@ public abstract class CookieConsumer {
                     .toString()), request.getContextPath() + authorizationURL))
                     .toString();
         }
-        authorizationURL = OAuth.addParameters(authorizationURL //
-                , OAuth.OAUTH_TOKEN, accessor.requestToken);
+        authorizationURL = OAuth.addParameters(authorizationURL, OAuth.OAUTH_TOKEN, accessor.requestToken);
         if (response.getParameter(OAuth.OAUTH_CALLBACK_CONFIRMED) == null) {
-            authorizationURL = OAuth.addParameters(authorizationURL //
-                    , OAuth.OAUTH_CALLBACK, callbackURL);
+            authorizationURL = OAuth.addParameters(authorizationURL, OAuth.OAUTH_CALLBACK, callbackURL);
         }
         throw new RedirectException(authorizationURL);
     }
